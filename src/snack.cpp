@@ -14,16 +14,16 @@ string Snack::get_name() const{
     return name;
 }
 
-Snack* Snack::itemExists(const std::vector<Item*>& items, const std::string name) {
-    for(Item* it : items) {
+Snack* itemExists(const std::vector<Item*>& items, const std::string name){
+    for(Item* it : items){
         Snack* snack = dynamic_cast<Snack*>(it);
-        if(snack && snack->get_name() == name) {
+        if(snack && snack->get_name() == name){
             return snack;
         }
     }
     return nullptr;
 }
-// i changed this function -- ali
+
 void Snack::addItem(std::vector<Item*>& items, string name, int amount){
     Snack* exists = itemExists(items, name);
     if(exists != nullptr){
