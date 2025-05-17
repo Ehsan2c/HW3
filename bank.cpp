@@ -91,9 +91,6 @@ void Bank::withdraw(double amount){
     balance = balance - amount;
     maxTransfer = maxTransfer - amount;
 }
-double Bank::get_balance() const{
-    return balance;
-}
 
 Bank* accountExists(const std::vector<Bank*>& accounts, std::string name, std::string bankType){
     for(Bank* account : accounts){
