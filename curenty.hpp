@@ -21,8 +21,6 @@ public:
     double getValue() const { return value; }
     void setValue(double val) { value = val; }
 
-    virtual ~Currency() {}
-
     Currency& operator+=(const Currency& other) {
         double converted = other.toUSD() / this->getConversionRate();
         value += converted;
