@@ -12,6 +12,7 @@ class Snack : public Item{
         void set_name(std::string);
         std::string get_name() const;
     private:
+        static Snack* itemExists(const std::vector<Item*>& items, const std::string name);
         std::string name;
     protected:
         virtual void set_unit(std::string) override;
