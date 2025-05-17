@@ -23,7 +23,6 @@ class Bank{
 
         void deposit(double);
         void withdraw(double);
-        double get_balance() const;
         void createAccount(std::vector<Bank*>& accounts, std::string name, int accountNumber, std::string currencyType, double balance, std::string bankType);
     private:
         std::string name;
