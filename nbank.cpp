@@ -1,4 +1,5 @@
-#include "bank.hpp"
+#include "nbank.hpp"
+#include "currency.hpp"
 #include <iostream>
 
 using namespace std;
@@ -8,7 +9,7 @@ void Bank::set_name(string name){
 }
 string Bank::get_name() const{
     return name;
-}
+} 
 void Bank::set_accountNumber(int accountNumber){
     if(accountNumber < 0){
         throw out_of_range("Account number can't be negative.");
@@ -27,14 +28,32 @@ void Bank::set_currencyType(string currencyType){
 string Bank::get_currencyType() const{
     return currencyType;
 }
-void Bank::set_balance(double balance){
+void Bank::set_balance(double balance){// اینو تغییر دادم
     if(balance < 0){
         throw out_of_range("Balance can't be negative.");
     }
-    this->balance = balance;
+     if (currencyType == "EUR") {
+        EUR eur(balance);
+        this->balance = eur.toUSD();
+    } else if (currencyType == "IRR") {
+        IRR irr(balance);
+        this->balance = irr.toUSD();
+    } else {
+        this->balance = balance; 
+    }
 }
-double Bank::get_balance() const{
-    return balance;
+double Bank::get_balance() const{// اینو تغییر دادم
+      if (currencyType == "EUR") {
+        USD usd(balance);
+        EUR eur(usd.getValue() / 1.12);
+        return eur.getValue();
+    } else if (currencyType == "IRR") {
+        USD usd(balance);
+        IRR irr(usd.getValue() * 830000.0);
+        return irr.getValue();
+    } else {
+        return balance; 
+    }
 }
 void Bank::set_bankType(string bankType){
     if(bankType != "personal" && bankType != "organization"){
@@ -68,20 +87,29 @@ void Bank::deposit(double amount){
     balance = balance + amount;
     maxTransfer = maxTransfer - amount;
 }
-void Bank::withdraw(double amount){
-    if(amount < 0){
+void Bank::withdraw(double amount){// اینو تغییر دادم
+    if (amount < 0) {
         throw out_of_range("You can't withdraw a negative amount.");
     }
-    if(balance < amount){
+    double amountUSD = amount;
+    if (currencyType == "EUR") {
+        EUR eur(amount);
+        amountUSD = eur.toUSD();
+    } else if (currencyType == "IRR") {
+        IRR irr(amount);
+        amountUSD = irr.toUSD();
+    }
+
+    if (balance < amountUSD) {
         cout << "You don't have enough money." << endl;
         return;
     }
-    if(maxTransfer - amount < 0){
+    if (maxTransfer - amountUSD < 0) {
         cout << "You have reached your max daily transfer amount." << endl;
         return;
     }
-    balance = balance - amount;
-    maxTransfer = maxTransfer - amount;
+    balance -= amountUSD;
+    maxTransfer -= amountUSD;
 }
 
 Bank* accountExists(const std::vector<Bank*>& accounts, int accountNumber){
@@ -111,12 +139,23 @@ void Bank::createAccount(std::vector<Bank*>& accounts, std::string name, int acc
     accounts.push_back(this);
 }
 
-void Bank::print(){
-    string dollar = " dollars.";
-    if(balance == 1){
-        dollar = " dollar.";
+void Bank::print(){ // اینو تغییر دادم
+    string currencySymbol = "USD";
+    double displayBalance = balance;
+
+    if (currencyType == "EUR") {
+        USD usd(balance);
+        EUR eur(usd.getValue() / 1.12);
+        displayBalance = eur.getValue();
+        currencySymbol = "EUR";
+    } else if (currencyType == "IRR") {
+        USD usd(balance);
+        IRR irr(usd.getValue() * 830000.0);
+        displayBalance = irr.getValue();
+        currencySymbol = "IRR";
     }
-    cout << "Account owner: " << name << ", account number: " << accountNumber << ", Balance: " << balance << dollar << endl;
+
+    cout << "Account owner: " << name << ", account number: " << accountNumber << ", Balance: " << displayBalance << " " << currencySymbol << endl;
 }
 
 void Bank::print(std::vector<Bank*>& accounts, int accountNumber){
@@ -125,9 +164,5 @@ void Bank::print(std::vector<Bank*>& accounts, int accountNumber){
         cout << "There is no account with this account number." << endl; 
         return;
     }
-    string dollar = " dollars.";
-    if(exists->get_balance() == 1){
-        dollar = " dollar.";
-    }
-    cout << "Account owner: " << exists->get_name() << ", account number: " << exists->get_accountNumber() << ", Balance: " << exists->get_balance() << dollar << endl;
+    exists->print();//اینجاشو تغییر دادم
 }
