@@ -3,15 +3,6 @@
 
 using namespace std;
 
-Bank::Bank(){
-    if(bankType == "personal"){
-        set_maxTransfer(1000);
-    }
-    if(bankType == "organization"){
-        set_maxTransfer(10000);
-    }
-}
-
 void Bank::set_name(string name){
     this->name = name;
 }
@@ -28,7 +19,7 @@ int Bank::get_accountNumber() const{
     return accountNumber;
 }
 void Bank::set_currencyType(string currencyType){
-    if(currencyType != "USD" || currencyType != "EUR" || currencyType != "IRR"){
+    if(currencyType != "USD" && currencyType != "EUR" && currencyType != "IRR"){
        throw out_of_range("Invalid currency type.");
     }
     this->currencyType = currencyType;
@@ -46,16 +37,17 @@ double Bank::get_balance() const{
     return balance;
 }
 void Bank::set_bankType(string bankType){
-    if(bankType != "personal" || bankType != "organization"){
+    if(bankType != "personal" && bankType != "organization"){
         throw out_of_range("Invalid bank type.");
     }
     this->bankType = bankType;
+    this->maxTransfer = (bankType == "personal") ? 1000 : 10000;
 }
 string Bank::get_bankType() const{
     return bankType;
 }
 void Bank::set_maxTransfer(double maxTransfer){
-    if(maxTransfer != 1000 || maxTransfer != 10000){
+    if(maxTransfer != 1000 && maxTransfer != 10000){
         throw out_of_range("Invalid max transfer");
     }
     this->maxTransfer = maxTransfer;
@@ -92,9 +84,9 @@ void Bank::withdraw(double amount){
     maxTransfer = maxTransfer - amount;
 }
 
-Bank* accountExists(const std::vector<Bank*>& accounts, std::string name, std::string bankType){
+Bank* accountExists(const std::vector<Bank*>& accounts, int accountNumber){
     for(Bank* account : accounts){
-        if(account && account->get_name() == name && account->get_bankType() == bankType){
+        if(account && account->get_accountNumber() == accountNumber){
             return account;
         }
     }
@@ -102,7 +94,11 @@ Bank* accountExists(const std::vector<Bank*>& accounts, std::string name, std::s
 }
         
 void Bank::createAccount(std::vector<Bank*>& accounts, std::string name, int accountNumber, std::string currencyType, double balance, std::string bankType){
-    Bank* exists = accountExists(accounts, name, bankType);
+    Bank* exists = accountExists(accounts, accountNumber);
+    if(exists != nullptr){
+        cout << "There is already an account with this account number." << endl;
+        return;
+    }
     if(exists != nullptr){
         exists->set_balance(exists->get_balance() + balance);
         return;
@@ -112,4 +108,26 @@ void Bank::createAccount(std::vector<Bank*>& accounts, std::string name, int acc
     set_currencyType("USD");
     set_balance(balance);
     set_bankType(bankType);
+    accounts.push_back(this);
+}
+
+void Bank::print(){
+    string dollar = " dollars.";
+    if(balance == 1){
+        dollar = " dollar.";
+    }
+    cout << "Account owner: " << name << ", account number: " << accountNumber << ", Balance: " << balance << dollar << endl;
+}
+
+void Bank::print(std::vector<Bank*>& accounts, int accountNumber){
+    Bank* exists = accountExists(accounts, accountNumber);
+    if(exists == nullptr){
+        cout << "There is no account with this account number." << endl; 
+        return;
+    }
+    string dollar = " dollars.";
+    if(exists->get_balance() == 1){
+        dollar = " dollar.";
+    }
+    cout << "Account owner: " << exists->get_name() << ", account number: " << exists->get_accountNumber() << ", Balance: " << exists->get_balance() << dollar << endl;
 }
