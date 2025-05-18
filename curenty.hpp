@@ -61,6 +61,24 @@ public:
         os << c.getValue() << " " << c.getName();
         return os;
     }
+    //new operator i add -- ali
+    
+    Currency operator*(const Currency& other) const {
+        return this->value * other.value;
+    }
+
+    Currency operator/(const Currency& other) const {
+        return this->value / other.value;
+    }
+
+    Currency operator+(const Currency& other) const {
+        return this->value + other.value;
+    }
+
+    Currency operator-(const Currency& other) const {
+        return this->value - other.value;
+    }
+    // these
 };
 
 
