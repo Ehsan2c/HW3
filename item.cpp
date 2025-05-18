@@ -45,7 +45,7 @@ void Item::byitem(std::string itemname, int amount, Bank& bank) {
 
     bank.withdraw(totalCost);
 
-    this->amount += amount;
+    this->amount -= amount;
 
     if (amount >= 5) {
         this->amount += 1;
