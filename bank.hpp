@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <vector>
+#include "item.hpp"
 
 class Bank{
     public:
@@ -24,7 +25,9 @@ class Bank{
         void deposit(double);
         void withdraw(double);
         void createAccount(std::vector<Bank*>& accounts, std::string name, int accountNumber, std::string currencyType, double balance, std::string bankType);
+       
     private:
+        friend class Item ;
         std::string name;
         int accountNumber;
         std::string currencyType;
